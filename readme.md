@@ -1,19 +1,19 @@
 # Lumina Style Bot
 
-Chatbot de atendimento para uma loja ficticia de moda, desenvolvido em Python com Flet e integrado a IA da Groq. O projeto responde perguntas sobre produtos, pagamento, frete, trocas, suporte e tambem usa um catalogo local em JSON para consultar informacoes da loja.
+Customer service chatbot for a fictional fashion store, built with Python and Flet and integrated with Groq AI. The project answers questions about products, payments, shipping, exchanges, support, and also uses a local JSON catalog to retrieve store information.
 
-## Funcionalidades
+## Features
 
-- Interface grafica simples usando Flet
-- Chat com respostas em portugues e ingles
-- Integracao com a API da Groq
-- Consulta de produtos cadastrados em `bd.json`
-- Busca por categorias, nomes de produtos e quantidades
-- Calculo simples de frete usando CEP com ViaCEP
-- Respostas prontas para pagamento, promocao, tabela de medidas, troca, suporte e rastreio
-- Configuracao da API Key pela propria interface
+- Simple graphical interface built with Flet
+- Chat responses in Portuguese and English
+- Groq API integration
+- Product lookup from `bd.json`
+- Search by category, product name, and quantity
+- Basic shipping calculation using ZIP/postal codes with ViaCEP
+- Ready-made answers for payments, promotions, size chart, exchanges, support, and tracking
+- API key configuration directly through the interface
 
-## Tecnologias utilizadas
+## Technologies
 
 - Python
 - Flet
@@ -23,85 +23,85 @@ Chatbot de atendimento para uma loja ficticia de moda, desenvolvido em Python co
 - ViaCEP
 - JSON
 
-## Estrutura do projeto
+## Project Structure
 
 ```text
 Lumina_Style/
-├── main.py             # Arquivo de entrada do projeto
+├── main.py             # Project entry point
 ├── src/
 │   ├── __init__.py
-│   ├── app.py          # Interface grafica do chatbot
-│   └── chatbot.py      # Logica de mensagens, produtos, idioma, frete e IA
+│   ├── app.py          # Chatbot graphical interface
+│   └── chatbot.py      # Message, product, language, shipping, and AI logic
 ├── data/
-│   └── bd.json         # Base de dados da loja em portugues e ingles
-├── .env.example        # Exemplo de configuracao da API Key
+│   └── bd.json         # Store database in Portuguese and English
+├── .env.example        # API key configuration example
 ├── .gitignore
-├── requirements.txt    # Dependencias do projeto
-└── readme.md           # Documentacao do projeto
+├── requirements.txt    # Project dependencies
+└── readme.md           # Project documentation
 ```
 
-## Como executar
+## How to Run
 
-### 1. Clone ou baixe o projeto
+### 1. Clone or download the project
 
 ```bash
-git clone <url-do-repositorio>
+git clone <repository-url>
 cd Lumina_Style
 ```
 
-Se voce ja tem a pasta do projeto, basta abrir o terminal dentro dela.
+If you already have the project folder, just open a terminal inside it.
 
-### 2. Crie um ambiente virtual
+### 2. Create a virtual environment
 
 ```bash
 python -m venv .venv
 ```
 
-Ative o ambiente virtual:
+Activate the virtual environment:
 
 ```bash
 source .venv/bin/activate
 ```
 
-No Windows:
+On Windows:
 
 ```bash
 .venv\Scripts\activate
 ```
 
-### 3. Instale as dependencias
+### 3. Install the dependencies
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Configure a API Key da Groq
+### 4. Configure the Groq API Key
 
-Ao abrir o aplicativo, clique em **Configurar API** e informe sua chave da Groq.
+When the application opens, click the settings button and enter your Groq API key.
 
-Ao salvar uma chave, o app cria um arquivo `.env` na raiz do projeto:
+When a key is saved, the app creates a `.env` file in the project root:
 
 ```env
-GROQ_API_KEY=sua_chave_aqui
+GROQ_API_KEY=your_api_key_here
 ```
 
-Se o campo da chave for apagado e salvo vazio, o app remove o arquivo `.env`.
+If the key field is cleared and saved empty, the app removes the `.env` file.
 
-> Importante: nao publique sua API Key em repositorios publicos.
+> Important: do not publish your API key in public repositories.
 
-### 5. Rode o projeto
+### 5. Run the project
 
 ```bash
 python main.py
 ```
 
-Tambem e possivel executar como modulo:
+You can also run it as a module:
 
 ```bash
 python -m src.app
 ```
 
-## Exemplos de perguntas
+## Example Questions
 
 ```text
 Quais produtos voces vendem?
@@ -115,14 +115,14 @@ Show me the products
 Do you have sneakers?
 ```
 
-## Base de dados
+## Database
 
-O arquivo `data/bd.json` guarda os dados da loja em dois idiomas:
+The `data/bd.json` file stores the shop data in two languages:
 
-- `pt`: respostas e produtos em portugues
-- `en`: respostas e produtos em ingles
+- `pt`: Portuguese responses and products
+- `en`: English responses and products
 
-Cada produto possui campos como:
+Each product includes fields such as:
 
 - `nome`
 - `preco`
@@ -131,29 +131,29 @@ Cada produto possui campos como:
 - `categorias`
 - `descricao`
 
-## Como funciona
+## How It Works
 
-O fluxo principal fica em `processar_mensagem_total`, dentro de `src/chatbot.py`.
+The main flow is handled by `processar_mensagem_total` inside `src/chatbot.py`.
 
-O chatbot primeiro tenta responder usando regras locais:
+The chatbot first tries to answer using local rules:
 
-- identifica o idioma da mensagem;
-- verifica se o usuario pediu informacoes prontas, como pagamento ou frete;
-- identifica CEPs;
-- busca produtos pelo nome ou categoria;
-- calcula quantidade quando o usuario informa numeros.
+- detects the message language;
+- checks whether the user requested predefined information, such as payment or shipping;
+- identifies ZIP/postal codes;
+- searches products by name or category;
+- calculates quantity when the user provides numbers.
 
-Se nenhuma regra local resolver a mensagem, o projeto envia a pergunta para a Groq, incluindo os dados da loja como contexto.
+If no local rule can answer the message, the project sends the question to Groq, including the store data as context.
 
-## Melhorias futuras
+## Future Improvements
 
-- Adicionar testes automatizados
-- Melhorar o visual da interface
-- Adicionar historico de conversa
-- Separar testes em uma pasta `tests/`
-- Validar automaticamente o formato do `bd.json`
-- Criar uma versao web publicada
+- Add automated tests
+- Improve the interface design
+- Add conversation history
+- Move tests into a dedicated `tests/` folder
+- Automatically validate the `bd.json` format
+- Create and deploy a web version
 
-## Autor
+## Author
 
-Projeto desenvolvido por Joaquim Koster como estudo de chatbot com IA, interface grafica e atendimento automatizado para e-commerce.
+Project developed by Joaquim Koster as a study project for AI chatbots, graphical interfaces, and automated e-commerce customer service.

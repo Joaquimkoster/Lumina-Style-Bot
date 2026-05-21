@@ -3,26 +3,21 @@ import time
 from pathlib import Path
 import flet as ft
 
-# Importando sua função de processamento
-# Certifique-se que o caminho src.chatbot existe no seu diretório
 try:
     from src.chatbot import ChatSession, processar_mensagem_total
 except ImportError:
     class ChatSession:
         pass
 
-    # Fallback para testes caso o arquivo não seja encontrado
     def processar_mensagem_total(texto, key, session=None):
-        time.sleep(1.5)  # Simula latência
+        time.sleep(1.5)  
         return f"Resposta simulada para: {texto}"
 
-# --- CONFIGURAÇÕES DE CAMINHO ---
 RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 ARQUIVO_ENV = RAIZ_PROJETO / ".env"
 ARQUIVO_KEY_ANTIGO = RAIZ_PROJETO / "chave_groq.txt"
 NOME_VARIAVEL_KEY = "GROQ_API_KEY"
 
-# --- FUNÇÕES DE PERSISTÊNCIA ---
 def carregar_chave_local():
     chave_ambiente = os.getenv(NOME_VARIAVEL_KEY)
     if chave_ambiente:
@@ -55,7 +50,6 @@ def salvar_chave_local(chave):
     if ARQUIVO_KEY_ANTIGO.exists(): ARQUIVO_KEY_ANTIGO.unlink()
     os.environ[NOME_VARIAVEL_KEY] = chave
 
-# --- INTERFACE PRINCIPAL ---
 def main(page: ft.Page):
     page.title = "Lumina Style Bot"
     page.theme_mode = "light"
@@ -67,10 +61,8 @@ def main(page: ft.Page):
     api_key_container = {"key": chave_inicial}
     chat_session = ChatSession()
 
-    # Elementos do Chat
     chat = ft.Column(expand=True, scroll="adaptive", spacing=10)
     
-    # Indicador de Digitando (Inicia oculto)
     indicador_digitando = ft.Row(
         controls=[
             ft.Container(
@@ -124,7 +116,6 @@ def main(page: ft.Page):
             page.update()
             return
 
-        # Adiciona mensagem do usuário
         chat.controls.append(
             ft.Row([
                 ft.Container(
@@ -137,7 +128,6 @@ def main(page: ft.Page):
             ], alignment="end")
         )
         
-        # Limpa campo e mostra indicador
         nova_msg.value = ""
         nova_msg.disabled = True
         botao_enviar.disabled = True
@@ -148,7 +138,6 @@ def main(page: ft.Page):
 
         page.run_thread(processar_resposta, texto, api_key_container["key"])
 
-    # Inputs
     nova_msg = ft.TextField(
         label="Digite sua mensagem...", 
         expand=True,
@@ -165,7 +154,6 @@ def main(page: ft.Page):
 
     botao_enviar = ft.FloatingActionButton(icon=ft.Icons.SEND, on_click=enviar_mensagem, bgcolor="blue")
 
-    # Funções de Configuração
     def salvar_chave(e):
         chave = api_input.value.strip()
         salvar_chave_local(chave)
@@ -184,7 +172,6 @@ def main(page: ft.Page):
 
     page.overlay.append(dialogo_config)
 
-    # Layout da Página
     page.add(
         ft.Row([
             ft.Text("Lumina Style", size=28, weight="bold", color="blue"),
@@ -193,7 +180,6 @@ def main(page: ft.Page):
         
         ft.Divider(),
         
-        # Container do Chat
         ft.Container(
             content=chat,
             expand=True,
@@ -201,7 +187,6 @@ def main(page: ft.Page):
             padding=ft.Padding(left=15, top=15, right=4, bottom=15),
         ),
         
-        # Área de Input
         ft.Row([
             nova_msg,
             botao_enviar
