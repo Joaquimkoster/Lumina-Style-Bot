@@ -17,6 +17,7 @@ RAIZ_PROJETO = Path(__file__).resolve().parent.parent
 ARQUIVO_ENV = RAIZ_PROJETO / ".env"
 ARQUIVO_KEY_ANTIGO = RAIZ_PROJETO / "chave_groq.txt"
 NOME_VARIAVEL_KEY = "GROQ_API_KEY"
+NOME_APP = "Lumina Style Bot"
 
 def carregar_chave_local():
     chave_ambiente = os.getenv(NOME_VARIAVEL_KEY)
@@ -51,11 +52,18 @@ def salvar_chave_local(chave):
     os.environ[NOME_VARIAVEL_KEY] = chave
 
 def main(page: ft.Page):
-    page.title = "Lumina Style Bot"
+    page.title = NOME_APP
     page.theme_mode = "light"
     page.padding = ft.Padding(left=20, top=20, right=8, bottom=20)
     page.window_width = 500
     page.window_height = 700
+    try:
+        page.window.icon = ""
+    except AttributeError:
+        try:
+            page.window_icon = ""
+        except AttributeError:
+            pass
 
     chave_inicial = carregar_chave_local()
     api_key_container = {"key": chave_inicial}
@@ -69,7 +77,7 @@ def main(page: ft.Page):
                 content=ft.Row(
                     controls=[
                         ft.ProgressRing(width=14, height=14, stroke_width=2),
-                        ft.Text("Lumina está pensando...", italic=True, size=12, color="gray"),
+                        ft.Text(f"{NOME_APP} está pensando...", italic=True, size=12, color="gray"),
                     ],
                     spacing=8,
                 ),
@@ -82,6 +90,33 @@ def main(page: ft.Page):
         visible=False
     )
 
+    def criar_bolha_mensagem(texto, autor):
+        eh_usuario = autor == "usuario"
+        markdown_args = {"selectable": True}
+        if hasattr(ft, "MarkdownExtensionSet"):
+            markdown_args["extension_set"] = ft.MarkdownExtensionSet.GITHUB_WEB
+        conteudo = (
+            ft.Text(texto, color="white", selectable=True)
+            if eh_usuario
+            else ft.Markdown(
+                texto,
+                **markdown_args,
+            )
+        )
+        return ft.Row(
+            controls=[
+                ft.Container(
+                    content=conteudo,
+                    bgcolor="#2563eb" if eh_usuario else "#f1f5f9",
+                    padding=ft.Padding(left=14, top=10, right=14, bottom=10),
+                    border_radius=16,
+                    width=360 if not eh_usuario else None,
+                ),
+                ft.Container(width=22) if eh_usuario else ft.Container(width=0),
+            ],
+            alignment="end" if eh_usuario else "start",
+        )
+
     def processar_resposta(texto, api_key):
         try:
             resposta = processar_mensagem_total(texto, api_key, chat_session)
@@ -93,17 +128,7 @@ def main(page: ft.Page):
         botao_enviar.disabled = False
         if indicador_digitando in chat.controls:
             chat.controls.remove(indicador_digitando)
-        chat.controls.append(
-            ft.Row([
-                ft.Container(
-                    content=ft.Text(resposta, color="black"),
-                    bgcolor="#eeeeee",
-                    padding=10,
-                    border_radius=15,
-                    width=350
-                )
-            ], alignment="start")
-        )
+        chat.controls.append(criar_bolha_mensagem(resposta, "bot"))
         page.update()
 
     def enviar_mensagem(e):
@@ -112,21 +137,11 @@ def main(page: ft.Page):
             return
         
         if api_key_container["key"] in ["SUA_CHAVE_AQUI", ""]:
-            chat.controls.append(ft.Text("⚠️ Configure a API Key no botão acima!", color="red"))
+            chat.controls.append(ft.Text("Configure a API Key no botão acima.", color="red"))
             page.update()
             return
 
-        chat.controls.append(
-            ft.Row([
-                ft.Container(
-                    content=ft.Text(texto, color="white"),
-                    bgcolor="blue",
-                    padding=10,
-                    border_radius=15,
-                ),
-                ft.Container(width=22),
-            ], alignment="end")
-        )
+        chat.controls.append(criar_bolha_mensagem(texto, "usuario"))
         
         nova_msg.value = ""
         nova_msg.disabled = True
@@ -152,7 +167,7 @@ def main(page: ft.Page):
         value=api_key_container["key"] if api_key_container["key"] != "SUA_CHAVE_AQUI" else ""
     )
 
-    botao_enviar = ft.FloatingActionButton(icon=ft.Icons.SEND, on_click=enviar_mensagem, bgcolor="blue")
+    botao_enviar = ft.FloatingActionButton(icon=ft.Icons.SEND, on_click=enviar_mensagem, bgcolor="#2563eb")
 
     def salvar_chave(e):
         chave = api_input.value.strip()
@@ -174,7 +189,7 @@ def main(page: ft.Page):
 
     page.add(
         ft.Row([
-            ft.Text("Lumina Style", size=28, weight="bold", color="blue"),
+            ft.Text(NOME_APP, size=28, weight="bold", color="#2563eb"),
             ft.IconButton(icon=ft.Icons.SETTINGS, on_click=lambda _: setattr(dialogo_config, "open", True) or page.update())
         ], alignment="spaceBetween"),
         
